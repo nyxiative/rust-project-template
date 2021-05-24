@@ -1,3 +1,5 @@
+use rust_project_template::hello_world;
+
 fn main() {
-    println!("Hello, world!");
+	println!("{}", hello_world());
 }
