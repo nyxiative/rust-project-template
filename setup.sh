@@ -17,12 +17,22 @@ if ! command -v fzf >/dev/null 2>&1; then
 	exit 177
 fi
 
+read -rp "Please choose the project type (bin/lib): " TYPE
+if [ "$TYPE" = "bin" ]; then
+	sd "Cargo.lock" "#Cargo.lock" ".gitignore"
+elif [ "$TYPE" = "lib" ]; then
+	:
+else
+	echo "Not a valid option"
+	exit 178
+fi
+
 read -rp "Please choose the Rust toolchain for the project (stable/nightly): " TOOLCHAIN
 if [ "$TOOLCHAIN" = "stable" ] || [ "$TOOLCHAIN" = "nightly" ]; then
 	echo "$TOOLCHAIN" > rust-toolchain
 else
 	echo "Not a valid Rust toolchain"
-	exit 178
+	exit 179
 fi
 
 
