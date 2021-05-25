@@ -4,7 +4,7 @@ AUTHOR=$(git config user.name)
 EMAIL=$(git config user.email)
 read -rp "Enter the name of the project: " CRATENAME
 
-FILES=(Cargo.toml README.md src/main.rs)
+FILES=(Cargo.toml README.md src/main.rs .github/workflows/ci.yml)
 
 if ! command -v sd >/dev/null 2>&1; then
 	echo "Please install 'sd' which can be installed with"
