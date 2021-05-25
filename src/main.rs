@@ -1,4 +1,4 @@
-use $CRATENAME::hello_world;
+use CRATENAME::hello_world;
 
 fn main() {
 	println!("{}", hello_world());

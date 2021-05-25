@@ -18,17 +18,24 @@ if ! command -v fzf >/dev/null 2>&1; then
 fi
 
 read -rp "Please choose the Rust toolchain for the project (stable/nightly): " TOOLCHAIN
-[ "$TOOLCHAIN" = "stable" ] || [ "$TOOLCHAIN" = "nightly" ] && echo "$TOOLCHAIN" > rust-toolchain || echo "Not a valid Rust toolchain" && exit 178
+if [ "$TOOLCHAIN" = "stable" ] || [ "$TOOLCHAIN" = "nightly" ]; then
+	echo "$TOOLCHAIN" > rust-toolchain
+else
+	echo "Not a valid Rust toolchain"
+	exit 178
+fi
 
-echo '# $CRATENAME\n\n## Usage\n```toml\n$CRATENAME = 0.1.0\n```' > README.md
 
-LICENSE=$(curl -s "https://raw.githubusercontent.com/spdx/license-list-data/master/licenses.md" | grep -oP "^\[\K[\w-.]+" | tr " " "\n" | fzf)
+LICENSE=$(curl -s "https://raw.githubusercontent.com/spdx/license-list-data/master/licenses.md" | grep -oP "^\[\K[\w-.]+" | sort | uniq | tr " " "\n" | fzf)
 echo "Downloading $LICENSE License document from https://raw.githubusercontent.com/spdx/license-list/master/$LICENSE.txt"
-curl -s "https://raw.githubusercontent.com/spdx/license-list/master/$LICENSE.txt" -o LICENSE
+curl -s "https://raw.githubusercontent.com/spdx/license-list/master/$LICENSE.txt" | sed "s//\n/g" > LICENSE || exit 188
 
-sd '$CRATENAME' "$CRATENAME" "{FILES[@]}"
-sd '$AUTHOR' "$AUTHOR" "{FILES[@]}"
-sd '$EMAIL' "$EMAIL" "{FILES[@]}"
+echo "Replacing README"
+printf '# CRATENAME\n\n## Usage\nAdd the following line to your Cargo.toml\n```toml\nCRATENAME = 0.1.0\n```' > README.md
+echo "Replacing variables in ${FILES[@]}"
+sd 'CRATENAME' "$CRATENAME" "${FILES[@]}"
+sd 'AUTHOR' "$AUTHOR" "${FILES[@]}"
+sd 'EMAIL' "$EMAIL" "${FILES[@]}"
 
 echo "Self destructing..."
 rm setup.sh
